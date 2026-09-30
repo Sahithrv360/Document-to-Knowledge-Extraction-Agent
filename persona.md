@@ -1,75 +1,78 @@
-# User Persona: Business Data Analyst
+# User Persona: Client and Contract Records Manager
 
-> **Persona type:** Evidence based working hypothesis, not a researched individual. The project brief identifies analysts as a user group but does not establish a specific first user. Validate this persona with interviews and workflow observation.
+> **Persona type:** Cross-industry working hypothesis. This persona represents a common user in any organization that manages client information and agreements. It is not based on a completed user study; validate the role, workflow, and priorities with people from the intended pilot organization.
 
 ## Snapshot
 
-**Name:** Maya Patel (fictional)  
-**Role:** Business Data Analyst  
-**Organization:** Mid-sized enterprise with contracts, invoices, and reports stored across shared repositories  
-**Experience:** Comfortable with spreadsheets, SQL, dashboards, and business data; not expected to be an AI or ontology specialist.
+**Name:** Priya Sharma (fictional)  
+**Role:** Client and Contract Records Manager  
+**Organization:** A document-heavy business or public organization  
+**Work context:** Maintains records for clients, customers, partners, properties, vendors, and agreements across digital folders, email/shared drives, databases, and paper files.
 
 ## Context
 
-Maya prepares reliable datasets and analysis from business documents. Source text may already have been produced by OCR, but useful facts—such as parties, dates, amounts, terms, and their relationships—remain buried in prose. She needs to turn those details into a consistent structure and connect them to approved records in the organization's business model.
+Priya needs to find, understand, and maintain information spread across files and records. Documents may include client forms, contracts, land or property agreements, invoices, permits, service agreements, correspondence, and supporting attachments. Some are searchable digital files; others are scans or paper records in a physical records room.
 
-The project brief does not prescribe a document type, company size, or current toolchain. The context above is a plausible starting scenario for discovery, not a confirmed deployment environment.
+Information about one client or agreement may be repeated across several documents with different names, spellings, identifiers, dates, or terms. A mismatch can make a relevant document difficult to find, cause a record to be linked to the wrong client or property, or lead staff to act on incomplete or outdated contract information.
+
+The exact organization, job title, document types, and systems are not specified yet. Priya is a composite persona for discovery, not a confirmed individual or a claim that every user shares these needs.
 
 ## Goals
 
-- Find relevant facts in documents without repeatedly reading every page by hand.
-- Produce structured, consistent information that can be searched, compared, and used in analysis.
-- Link document mentions to the right existing business records when the evidence supports a match.
-- Verify where a result came from and explain it to colleagues.
-- Spend review time on ambiguous or high-impact cases rather than rechecking every straightforward field.
+- Find all relevant client and contract records quickly, even when stored in different folders or formats.
+- See a complete, organized view of the information and documents associated with a client, property, project, or agreement.
+- Extract important details from contracts and supporting records into consistent, searchable fields.
+- Identify duplicates, mismatched names, missing values, outdated versions, and conflicting terms.
+- Understand which documents support each detail and whether it has been reviewed.
+- Keep client records accurate and help colleagues avoid decisions based on the wrong document or incomplete information.
 
 ## Behaviors and needs
 
-- Works with a mix of document layouts and wording; names, dates, amounts, and terms may be presented inconsistently.
-- Needs source text or location beside each extracted value so she can check it quickly.
-- Wants unresolved matches and uncertain interpretations clearly marked for review.
-- Needs to distinguish what the document explicitly states from what the system inferred or normalized.
-- Values a practical correction path and consistent output over a confident-looking answer without evidence.
+- Searches by several clues: client name, alternate name, account or case ID, address or parcel identifier, contract number, date, organization, or subject.
+- Checks folders, shared drives, paper indexes, and business systems; asks colleagues when information is missing.
+- Compares details across contracts, forms, amendments, correspondence, invoices, and other supporting files.
+- Needs the original source wording and location beside normalized information.
+- Needs clear handling of amendments, renewals, superseded contracts, duplicate records, and conflicting assertions.
+- Needs access controls appropriate to sensitive client and contract records.
 
 ## Frustrations and risks
 
-- Manually copying information from long documents is repetitive and difficult to scale.
-- OCR text can be readable while still lacking the entities, roles, facts, and links needed for analysis.
-- Similar organization names and unclear party roles can lead to incorrect links or relationships.
-- An unstated year, ambiguous amount, or conflicting source should not be silently resolved by guesswork.
-- If evidence and uncertainty are hidden, she cannot confidently review or defend the resulting dataset.
-
-## Motivations
-
-- Deliver analysis on time using information that is complete enough to be useful and traceable.
-- Reduce avoidable manual handling while retaining meaningful oversight.
-- Build trust with business stakeholders by showing how a result was derived.
+- Files may be stored in inconsistent folder structures, paper archives, or disconnected systems.
+- Similar client names, aliases, addresses, parcels, and company names can lead to false matches.
+- A relevant document may be missed because its filename, filing location, scan quality, or metadata is poor.
+- Contract terms can change through amendments; an older version may be mistaken for the current one.
+- Manual data entry is time-consuming and can introduce mismatches or omissions.
+- A polished summary without clear citations to the source is difficult to trust or act on.
+- Missing information must not be silently inferred, especially where legal, financial, property, or contractual decisions are involved.
 
 ## Needs from the proposed system
 
-1. Receive already-extracted document text (OCR may be a separate upstream step).
-2. Identify entities, facts, and relationships in a structured format.
-3. Preserve source evidence for each result, with page or section location when available.
-4. Map to the existing business model only when there is a reliable match; otherwise leave it unresolved.
-5. Represent confidence, ambiguity, and review status explicitly.
-6. Let a person inspect and query results, and correct errors where the product supports review.
+1. **Find and ingest records:** Work with permitted digital files and scanned/paper-derived text; preserve links to originals and their locations.
+2. **Extract comprehensively within a defined scope:** Capture relevant document metadata, people and organizations, client identifiers, property or asset details, agreement parties and roles, dates, amounts, terms, rights, obligations, conditions, renewals, amendments, references, and supporting-document links as applicable to the document type.
+3. **Support different domains:** Use a shared core model for common concepts and configurable fields/vocabularies for document types such as land agreements, service contracts, leases, sales, or client onboarding records.
+4. **Connect related information carefully:** Link documents and mentions to a client, property, project, or canonical record only when reliable; offer possible matches for review when uncertain.
+5. **Preserve evidence and versions:** Show the original value, source passage, page/section, document version, extraction run, and review state.
+6. **Surface mismatch and conflict:** Flag duplicate-looking clients, inconsistent identifiers, conflicting contract terms, missing expected fields, and superseded versions.
+7. **Support incremental updates:** When a file or extraction changes, update only related facts, links, and evidence while preserving unrelated records and other documents' support.
+8. **Respect records access rules:** Search and display only records the user is authorized to access; retain audit history for important changes.
 
 ## Success signals
 
-- Less time spent locating and re-entering facts than in the current workflow.
-- Fewer unsupported or incorrect entity links and relationship labels.
-- Reviewers can trace a result to its source passage and understand its status.
-- The output can be queried or used downstream without losing provenance or uncertainty.
-- Quality is measured on a representative sample, including ambiguous and conflicting cases.
+- Users find relevant records faster than with the current folder/paper search process.
+- Important fields and links are supported by source evidence and can be checked quickly.
+- The system surfaces likely mismatches and version conflicts without silently merging records.
+- Reviewers can tell current, amended, superseded, unresolved, and conflicting information apart.
+- Corrections and document revisions update the right records without damaging unrelated knowledge.
+- Extraction quality and search success are measured on representative examples for each supported document type.
 
 ## Design implication
 
-Make the evidence, match status, and uncertainty visible at the point of review. Treat an unresolved value as a valid result that can be investigated, rather than forcing a potentially wrong answer.
+Treat the system as an evidence-backed records index and knowledge layer across documents, clients, contracts, and relevant assets. Make finding and verifying the right source record the core workflow. Keep a configurable domain schema so the product can support different businesses without pretending every field applies to every document.
 
 ## Assumptions to validate
 
-- Analysts are the first daily users; document processors or domain owners may be the primary reviewers instead.
-- The first workflow and document type are not yet selected.
-- Users can access the source documents and the organization's canonical business records.
-- Reviewers need evidence at field level, not only a document-level confidence score.
-- Time saved and extraction quality are both important; acceptable error rates will depend on the field and its consequences.
+- The first users are records coordinators, operations staff, account managers, contract administrators, or similar roles; exact titles vary by organization.
+- Both digital and paper-origin records are in scope, though the first prototype may begin with extracted text and digital files.
+- Client identity, document version, and source location are central to matching and retrieval.
+- Users need a shared common model plus document-type-specific fields.
+- The desired extraction coverage, retention rules, access policies, and impact thresholds must be defined with the organization and its domain owners.

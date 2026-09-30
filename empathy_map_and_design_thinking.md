@@ -2,121 +2,143 @@
 
 ## Scope and evidence
 
-This map is for the **hypothetical business data analyst persona** described in [persona.md](persona.md). It is derived from the project problem statement, which concerns converting already-extracted document text into structured entities, facts, and relationships, mapping them to an existing business model where possible, and keeping evidence and uncertainty visible.
+This map is for the **hypothetical Client and Contract Records Manager** described in [persona.md](persona.md). The intended users may have different job titles across industries—for example, records coordinators, client/account managers, contract administrators, operations staff, property managers, or small-business owners.
 
-These are informed hypotheses, not direct quotes from interviewed users. Validate them with analysts, document processors, and domain owners before treating them as findings.
+The project addresses the difficulty of finding and using client and agreement information scattered across computer folders, business systems, scans, and paper records. These empathy statements are informed hypotheses, not direct user quotes or completed research. Validate them with people in the target workflow.
 
 ## Empathy map
 
 | Says | Thinks |
 |---|---|
-| “I need to know where this value came from.” *(hypothesis)* | “Can I defend this result if someone asks how we got it?” |
-| “This company name might be a different record.” *(hypothesis)* | “A plausible match is not necessarily the correct match.” |
-| “The document doesn’t say which year.” *(hypothesis)* | “The system should leave gaps open instead of filling them in.” |
-| “I need these fields in a consistent format.” *(hypothesis)* | “I want to spend my time analyzing data, not repeatedly transcribing it.” |
+| “I know we have the contract somewhere, but I can’t find it.” *(hypothesis)* | “The file may be under another name or in another folder.” |
+| “Are these two records for the same client or two different clients?” *(hypothesis)* | “A wrong match could cause someone to use the wrong agreement.” |
+| “Which version includes the latest change?” *(hypothesis)* | “An amendment may have changed a term in the original contract.” |
+| “Show me the page where that detail came from.” *(hypothesis)* | “I need evidence before I rely on an extracted value.” |
+| “I need all the important details in one place.” *(hypothesis)* | “I want complete enough records for this document type, without invented information.” |
 
 | Does | Feels |
 |---|---|
-| Reads OCR text and locates names, dates, amounts, terms, and roles. | Frustrated by repetitive manual extraction. |
-| Compares mentions against approved business records and vocabulary. | Cautious when names or relationships are ambiguous. |
-| Checks extracted values against the source passage. | More confident when evidence is easy to inspect. |
-| Flags unclear or conflicting cases for follow-up. | Concerned that a hidden mistake could contaminate downstream analysis. |
+| Searches folder names, client names, IDs, addresses, dates, and paper indexes. | Frustrated when a relevant file is buried or inconsistently labeled. |
+| Compares names, identifiers, terms, and dates across records. | Cautious about duplicates, conflicting values, and outdated versions. |
+| Opens original documents to verify key details. | More confident when each detail links directly to the source. |
+| Asks colleagues or domain owners when a record is unclear. | Concerned when a mismatch could create operational, financial, property, or contractual problems. |
+| Follows up on missing, unsigned, amended, or expired agreements. | Relieved when status and next actions are visible. |
 
-The behaviors and emotions are plausible consequences of the stated workflow and risks; they should be tested through observation and interviews.
+These behaviors and emotions are hypotheses to test through observation and interviews.
 
 ### Pains
 
-- Readable OCR output still needs human interpretation and structuring.
-- Facts and relationships can be inconsistent across documents.
-- Entity matching may be ambiguous, especially with similar names or alternate names.
-- A system that hides its evidence or uncertainty makes review and correction difficult.
+- Client and contract records are spread across folders, systems, scans, and paper archives.
+- A file may not be discoverable from the name or identifier the user knows.
+- Similar names, alternate spellings, addresses, or parcel identifiers can cause incorrect matches.
+- Amendments and renewals make it hard to tell which terms are current.
+- Manual data entry and cross-checking take time and allow errors to persist.
+- Uncited summaries and hidden uncertainty make extracted information hard to trust.
 
 ### Gains
 
-- Consistent, searchable facts and relationships from document text.
-- Faster review because the source passage is shown alongside each extracted result.
-- Reliable links to canonical records, with clear unresolved status when evidence is weak.
-- A traceable dataset that supports analysis and downstream queries.
+- One searchable view of authorized, related documents and their key details.
+- Faster retrieval using multiple identifiers and relationships.
+- Comprehensive, structured information tailored to each document type.
+- Clear source passages, document versions, review state, and history for each extracted fact.
+- Early warnings for possible duplicates, mismatches, missing fields, and conflicting or outdated terms.
+- Safer updates when records or documents change.
 
 ## Design thinking
 
 ### 1. Empathize
 
-**Objective:** Learn who handles the first document workflow, what they do today, and where errors or delays matter most.
+**Objective:** Understand how an organization currently stores, finds, verifies, updates, and uses client and contract records.
 
 **Activities:**
 
-- Interview analysts, document processors, and the domain owners responsible for the business vocabulary.
-- Observe one real workflow from receiving OCR text through review and use of the resulting data.
-- Ask users to walk through ordinary, ambiguous, and conflicting examples.
-- Record existing handoffs, tools, time spent, rework, and consequences of incorrect facts or links.
+- Interview records staff, client/account managers, contract administrators, operations users, and relevant domain owners.
+- Observe a real search from the user's initial clue through locating the record, checking its version, and taking action.
+- Map the sources involved: shared folders, email, line-of-business systems, paper indexes, scans, and records rooms.
+- Ask users to demonstrate ordinary, duplicate-looking, amended, incomplete, and conflicting examples.
+- Record time to retrieve, common search failures, rework, handoffs, sensitivity/access requirements, and consequences of an incorrect match.
 
 **Questions to investigate:**
 
-- Which document type and business decision should the first prototype support?
-- Which fields and relationships are essential, and which are optional?
-- What evidence is enough to link a mention to a canonical record?
-- Which fields require human approval because a mistake has higher impact?
-- How do users currently record uncertainty and resolve conflicts?
+- Which user group and workflow should the first release serve?
+- Which client, contract, asset, and document types are in scope first?
+- What identifiers do users know when they search (client ID, company name, address, parcel number, contract number)?
+- How do users know an agreement is active, amended, expired, or superseded?
+- Which details must be extracted for each document type, and who owns that vocabulary?
+- What is the acceptable behavior when identity or a term is ambiguous?
+- Which records may each user role access, and what audit trail is required?
 
 ### 2. Define
 
 **Working problem statement:**
 
-> Business data analysts need a way to turn document text into traceable, consistently structured facts and relationships, because manual interpretation is repetitive and unsupported matches can undermine trust in the resulting data.
-
-This is a hypothesis to refine after discovery. The initial user, document type, and impact measures remain open in the project brief.
+> People who manage client and contract records need a reliable way to find and understand related information across scattered digital and paper-origin files, because inconsistent names, filing, identifiers, and document versions can hide relevant records or lead to serious mismatches.
 
 **How might we…**
 
-- help analysts find and verify document facts with less repetitive handling?
-- show enough source evidence to make extraction review quick and trustworthy?
-- map document language to the business model while making uncertain matches explicit?
-- help reviewers prioritize cases where ambiguity or conflict matters most?
+- help users find the right documents using any known client, contract, property, or project clue?
+- bring relevant information together while preserving the source and version of each detail?
+- extract comprehensive document-specific information without inventing missing facts?
+- identify likely duplicate clients and conflicting or superseded contract terms for review?
+- update the knowledge layer when a file changes without rebuilding unrelated records?
+- enforce the organization's access and records-retention policies?
+
+Refine this statement after selecting the first user group, organization type, and workflow.
 
 ### 3. Ideate
 
 Possible directions to explore with users:
 
-- An evidence-first review screen showing the source passage next to each extracted field.
-- Clear states such as **extracted**, **normalized**, **needs review**, and **unresolved**.
-- Candidate record suggestions with the evidence for a match and a human confirmation path.
-- Validation rules for dates, currencies, required fields, and allowed relationship types.
-- A comparison view for conflicting values across documents, preserving each source.
-- Search and export for reviewed structured results.
+- A unified search across permitted files using names, aliases, IDs, dates, addresses, parcels, and contract numbers.
+- A client or asset page that lists related documents, agreements, key facts, amendments, and source links.
+- Document-type extraction templates with a shared core and configurable fields for land agreements, leases, service contracts, sales, and other records.
+- A version timeline showing original agreements, amendments, renewals, expiry, and superseded versions.
+- Evidence-first results showing the source text and page/section beside every extracted fact.
+- Possible duplicate and entity-match suggestions with a human confirmation path.
+- Mismatch checks for identifiers, parties, amounts, dates, signatures, and contract status.
+- Incremental reconciliation so only changed evidence and relationships are updated.
+- Role-based access and audit history for searching, reviewing, and modifying sensitive records.
 
-These are design options, not confirmed requirements or a committed interface specification.
+These are ideas for testing, not a finalized product specification.
 
 ### 4. Prototype
 
-Build a small, reviewable prototype for one selected document type and workflow. It should accept text that has already been extracted and return:
+Start with one organization and one retrieval/extraction workflow. A focused prototype could:
 
-- entities, facts, and relationships in a defined schema;
-- source passages and page/section locations where available;
-- normalized values alongside original wording;
-- match and review status, including unresolved values;
-- an inspection path for a person to accept, correct, or flag a result.
+- ingest a permitted set of digital documents and, if available, paper-origin scans;
+- extract text and layout, then capture document metadata and the fields relevant to the selected type;
+- connect each extracted fact to a source passage and document version;
+- associate documents with a client, contract, property, or asset only when confidence and evidence are sufficient;
+- display duplicates, ambiguity, missing values, conflicts, and amendment status for review;
+- search by common user clues and display related records;
+- update only the changed document's evidence and links when a new version is processed.
 
-Use a small set of permitted sample documents that includes clear, ambiguous, and conflicting examples. Keep the prototype's scope aligned to the chosen workflow; OCR can be added separately if end-to-end input is needed.
+For the first prototype, select a limited schema deliberately. Support broadening through configurable document types rather than claiming that one fixed list contains every possible fact for every business.
 
 ### 5. Test and learn
 
-Evaluate with users against a labeled sample and the current workflow. Track:
+Test with users on representative records, including difficult cases. Measure:
 
-- time to find, review, and correct the target information;
-- accuracy of required fields and relationship roles;
-- correctness of canonical record matches;
-- whether each result has usable supporting evidence;
-- how often users accept, edit, reject, or leave a result unresolved;
-- whether users understand the difference between stated facts and interpretations.
+- time and success rate for finding a relevant document;
+- recall of relevant documents returned for a client/contract search;
+- accuracy of extracted fields by document type;
+- false client, property, or contract matches;
+- ability to identify current versus superseded agreements;
+- evidence coverage and whether cited passages support the displayed details;
+- how often users accept, edit, reject, or leave a match unresolved;
+- detection of missing fields and cross-document conflicts;
+- correctness and idempotence of incremental updates;
+- access-control and audit behavior in the tested workflow.
 
-Review errors by type and impact. Revise the schema, matching rules, review flow, or target scope based on observed problems. Do not treat a single overall confidence score as proof that a result is correct.
+Review failures by type and consequence. Update the search fields, extraction schema, resolution rules, review experience, and document-type scope based on observed results.
 
 ## Initial design principles
 
-1. **Evidence stays attached:** Each extracted value should be traceable to its source passage.
-2. **Uncertainty stays visible:** Ambiguous facts and matches can remain unresolved.
-3. **Relationships need support:** A recognized name does not establish its role in a transaction.
-4. **Normalize without erasing:** Preserve the document's wording alongside any standardized form.
-5. **Review focuses on risk:** Make unclear or consequential results easy to find and resolve.
-6. **Start with one workflow:** Validate a focused use case before broadening document types or automation.
+1. **Search from real clues:** Support the names and identifiers users actually have.
+2. **Keep evidence attached:** Every extracted value should lead back to its original record and location.
+3. **Comprehensive but scoped:** Extract all required/relevant fields defined for each supported document type; preserve additional source content for later review where feasible.
+4. **Uncertainty remains visible:** An ambiguous client or missing contract term can stay unresolved.
+5. **Versions and amendments matter:** Preserve history and distinguish current terms from superseded ones.
+6. **Do not merge on resemblance alone:** Similarity can suggest candidates, while confirmation rules protect identity.
+7. **Respect permissions:** Results and sources must honor access rights and audit policies.
+8. **Incremental updates are source-aware:** A changed document removes only its own support, not facts still supported by other records.
