@@ -18,6 +18,10 @@ Use this questionnaire in a meeting with the startup that provided the problem s
 10. **Can you provide representative sample documents and expected results?** Include ordinary, ambiguous, amended, duplicate-looking, and difficult cases, with permission to use them.
 11. **What technologies or constraints are already required?** Include existing databases, cloud/platform preferences, integrations, security requirements, and any technology that must or must not be used.
 12. **What is the expected project timeline, team size, and demo environment?**
+13. **Which input modalities must the product support?** Should it process text documents, scanned files/images, audio recordings, and video, or should the first release prioritize some of them?
+14. **How should first-time setup work for a new organization?** Which sources should admins connect, and what onboarding should be self-service?
+15. **How should new and changed data be added after setup?** Do you expect watched folders, webhooks, scheduled sync, database change capture, or manual upload?
+16. **How fresh must newly added information be?** Seconds/minutes, hourly, daily, or another service target?
 
 ## 2. Users and stakeholders
 
@@ -50,7 +54,10 @@ Use this questionnaire in a meeting with the startup that provided the problem s
 - What does “all relevant information” mean for each selected document type?
 - Which documents are related to one another—for example, a contract, amendment, invoice, client form, property record, or correspondence?
 - Do documents contain tables, handwriting, stamps, signatures, attachments, or poor-quality scans?
-- Do you expect the team to implement OCR, or will extracted text be provided?
+- Which modalities are needed: native documents, scanned PDFs/images, standalone images, audio, and video?
+- Do you expect the product to provide OCR, transcription, and video frame processing, or will some content already be extracted?
+- For audio/video, do you need timestamps, speaker turns, image/frame evidence, or particular languages?
+- Are there limits on recording length, video size, or processing time?
 - Are documents in multiple languages or formats?
 - Should the system index entire documents, selected fields, or both?
 - What kinds of files and maximum document sizes or volumes should be supported?
@@ -116,6 +123,13 @@ Use this questionnaire in a meeting with the startup that provided the problem s
 ## 10. Integrations and technical environment
 
 - Which file stores, document management systems, CRMs, contract systems, databases, or identity providers are currently used?
+- How should a new customer connect these sources during first-time installation or onboarding?
+- Which onboarding tasks should be self-service, and which require your implementation/support team?
+- After initial backfill, how should connectors discover new and changed items: event/webhook, watched folder, scheduled polling, CDC, or manual upload?
+- What is the required freshness from source change to searchable result?
+- How should connector access tokens/credentials be stored, rotated, and revoked?
+- Should an administrator be able to add a source or document type by configuration, or will developer work be expected?
+- How should deleted, permission-changed, duplicate, or inaccessible source items be handled?
 - Must the prototype integrate with them, or can it use a prepared sample set?
 - What data should be imported, and where should results be written?
 - Are APIs, SDKs, or integration documentation available?
@@ -164,12 +178,15 @@ Use this questionnaire in a meeting with the startup that provided the problem s
 | Initial organization/domain |  |
 | First workflow |  |
 | First document types |  |
+| Required modalities for first release |  |
 | Current pain and impact |  |
 | Required extracted information |  |
 | Search and relationship needs |  |
 | Matching/version rules |  |
 | Review workflow |  |
 | Sample documents available |  |
+| Source connection / first-time setup |  |
+| Dynamic ingestion method and freshness |  |
 | Privacy/security constraints |  |
 | Integrations/technology constraints |  |
 | Success measures |  |

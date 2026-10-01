@@ -2,9 +2,9 @@
 
 ## Scope and evidence
 
-This map is for the **hypothetical Client and Contract Records Manager** described in [persona.md](persona.md). The intended users may have different job titles across industries—for example, records coordinators, client/account managers, contract administrators, operations staff, property managers, or small-business owners.
+This map is for the **hypothetical Client and Contract Records Manager** described in [persona.md](persona.md). The intended users may have different job titles across industries—for example, records coordinators, client/account managers, contract administrators, operations staff, property managers, or small-business owners. Their records may be in documents, images, audio recordings, video, or paper archives.
 
-The project addresses the difficulty of finding and using client and agreement information scattered across computer folders, business systems, scans, and paper records. These empathy statements are informed hypotheses, not direct user quotes or completed research. Validate them with people in the target workflow.
+The project addresses the difficulty of finding and using client and agreement information scattered across computer folders, business systems, scans, images, recordings, videos, and paper records. These empathy statements are informed hypotheses, not direct user quotes or completed research. Validate them with people in the target workflow.
 
 ## Empathy map
 
@@ -15,6 +15,7 @@ The project addresses the difficulty of finding and using client and agreement i
 | “Which version includes the latest change?” *(hypothesis)* | “An amendment may have changed a term in the original contract.” |
 | “Show me the page where that detail came from.” *(hypothesis)* | “I need evidence before I rely on an extracted value.” |
 | “I need all the important details in one place.” *(hypothesis)* | “I want complete enough records for this document type, without invented information.” |
+| “Can new files be picked up automatically?” *(hypothesis)* | “I need setup to fit our existing folders and systems, and new records should not require repeated manual imports.” |
 
 | Does | Feels |
 |---|---|
@@ -28,8 +29,9 @@ These behaviors and emotions are hypotheses to test through observation and inte
 
 ### Pains
 
-- Client and contract records are spread across folders, systems, scans, and paper archives.
+- Client and contract records are spread across folders, systems, scans, images, audio/video recordings, and paper archives.
 - A file may not be discoverable from the name or identifier the user knows.
+- Complicated first-time setup or manual imports can make adoption harder and leave new records out of date.
 - Similar names, alternate spellings, addresses, or parcel identifiers can cause incorrect matches.
 - Amendments and renewals make it hard to tell which terms are current.
 - Manual data entry and cross-checking take time and allow errors to persist.
@@ -38,6 +40,7 @@ These behaviors and emotions are hypotheses to test through observation and inte
 ### Gains
 
 - One searchable view of authorized, related documents and their key details.
+- Guided first-time setup to connect approved sources, followed by automatic or scheduled intake of new and changed items.
 - Faster retrieval using multiple identifiers and relationships.
 - Comprehensive, structured information tailored to each document type.
 - Clear source passages, document versions, review state, and history for each extracted fact.
@@ -67,6 +70,8 @@ These behaviors and emotions are hypotheses to test through observation and inte
 - Which details must be extracted for each document type, and who owns that vocabulary?
 - What is the acceptable behavior when identity or a term is ambiguous?
 - Which records may each user role access, and what audit trail is required?
+- Which sources should be connected during setup, and how should new items arrive afterward: watched folder, scheduled sync, webhook, or manual upload?
+- How quickly must a new or changed item appear in search after it is added to a connected source?
 
 ### 2. Define
 
@@ -103,17 +108,19 @@ These are ideas for testing, not a finalized product specification.
 
 ### 4. Prototype
 
-Start with one organization and one retrieval/extraction workflow. A focused prototype could:
+Start with one organization and one retrieval/extraction workflow. Make setup guided and repeatable: connect an approved source, verify access, choose what to index, run an initial backfill, and show sync status. A focused prototype could:
 
-- ingest a permitted set of digital documents and, if available, paper-origin scans;
-- extract text and layout, then capture document metadata and the fields relevant to the selected type;
-- connect each extracted fact to a source passage and document version;
+- ingest a permitted set of documents, images, audio, and video, including paper-origin scans;
+- use OCR and visual/layout understanding for images and documents; speech recognition and timestamps for audio; and selected video frames plus audio transcription for videos;
+- capture media metadata and fields relevant to the selected type;
+- connect each extracted fact to its source passage, image region, page, timestamp, and source version as applicable;
 - associate documents with a client, contract, property, or asset only when confidence and evidence are sufficient;
 - display duplicates, ambiguity, missing values, conflicts, and amendment status for review;
 - search by common user clues and display related records;
-- update only the changed document's evidence and links when a new version is processed.
+- detect or receive new and changed items from connected sources, queue processing, and update only the changed item's evidence and links;
+- display ingestion status and errors so users can see which items were processed, skipped, or need attention.
 
-For the first prototype, select a limited schema deliberately. Support broadening through configurable document types rather than claiming that one fixed list contains every possible fact for every business.
+For the first prototype, select a limited set of modalities and schema deliberately. Support broadening through configurable document types and processing adapters rather than claiming that one fixed list contains every possible fact for every business. Define the connectors, sync method, and acceptable freshness with the startup.
 
 ### 5. Test and learn
 
@@ -135,10 +142,12 @@ Review failures by type and consequence. Update the search fields, extraction sc
 ## Initial design principles
 
 1. **Search from real clues:** Support the names and identifiers users actually have.
-2. **Keep evidence attached:** Every extracted value should lead back to its original record and location.
-3. **Comprehensive but scoped:** Extract all required/relevant fields defined for each supported document type; preserve additional source content for later review where feasible.
-4. **Uncertainty remains visible:** An ambiguous client or missing contract term can stay unresolved.
-5. **Versions and amendments matter:** Preserve history and distinguish current terms from superseded ones.
-6. **Do not merge on resemblance alone:** Similarity can suggest candidates, while confirmation rules protect identity.
-7. **Respect permissions:** Results and sources must honor access rights and audit policies.
-8. **Incremental updates are source-aware:** A changed document removes only its own support, not facts still supported by other records.
+2. **Easy first-time setup:** Connect sources through guided configuration and access checks.
+3. **Dynamic ingestion:** Process new and changed items through an agreed sync mechanism and show status/errors.
+4. **Multimodal evidence:** Retain document passages, image regions, audio timestamps, or video timecodes as appropriate.
+5. **Comprehensive but scoped:** Extract all required/relevant fields defined for each supported type; preserve additional source content for later review where feasible.
+6. **Uncertainty remains visible:** An ambiguous client or missing contract term can stay unresolved.
+7. **Versions and amendments matter:** Preserve history and distinguish current terms from superseded ones.
+8. **Do not merge on resemblance alone:** Similarity can suggest candidates, while confirmation rules protect identity.
+9. **Respect permissions:** Results and sources must honor access rights and audit policies.
+10. **Incremental updates are source-aware:** A changed source removes only its own support, not facts still supported by other records.

@@ -1,6 +1,6 @@
 # Approaches and Technologies for Document-to-Knowledge Extraction
 
-This guide surveys methods that can help convert document text into reliable, structured business knowledge. It covers extraction, entity matching, validation, storage, incremental updates, and human review. The methods can be combined; no single technology handles the entire problem.
+This guide surveys methods that can help turn documents, images, audio, and video into reliable, structured business knowledge. It covers multimodal extraction, entity matching, validation, storage, incremental updates, source onboarding, and human review. The methods can be combined; no single technology handles the entire problem.
 
 > **Technology note:** Product capabilities, versions, licensing, and hosting options can change. Treat named products as examples to evaluate on your own documents, security requirements, and budget. A named technology may support a method without implementing every step of the project.
 
@@ -13,6 +13,26 @@ This guide surveys methods that can help convert document text into reliable, st
 **Example technologies:** Tesseract OCR; Amazon Textract; Google Cloud Document AI; Azure AI Document Intelligence.
 
 **Tradeoffs:** OCR errors can propagate into extraction. Tables, handwriting, low-quality scans, and unusual layouts may need specialized processing. Evaluate text accuracy and layout preservation separately from semantic extraction.
+
+## 1A. Audio transcription and understanding
+
+**Method:** Convert speech to text with automatic speech recognition (ASR). Preserve timestamps and, where useful, speaker-turn labels. Add audio classification or keyword/event detection only for a defined need. Link extracted assertions back to the corresponding time interval.
+
+**Useful when:** Client conversations, interviews, meeting recordings, call recordings, or voice notes contain information that should be searchable alongside contracts and records.
+
+**Example technologies:** Whisper; cloud speech recognition services; Kaldi/Vosk; NVIDIA NeMo; diarization toolkits such as pyannote.audio.
+
+**Tradeoffs:** Accuracy depends on language, accents, noise, domain vocabulary, and recording quality. A speaker label is not identity verification. Consent, retention, and recording access policies must be respected. Always retain the audio reference and transcript timestamps for review.
+
+## 1B. Video analysis
+
+**Method:** Extract media metadata, sample key frames, apply image/OCR analysis to frames, and process the audio track through speech recognition. Store results with video timecodes and frame references. Use dense frame analysis only when the use case justifies its cost.
+
+**Useful when:** Site inspections, property walkthroughs, recorded client interactions, training footage, or other videos contain relevant spoken or visual evidence.
+
+**Example technologies:** FFmpeg for media demuxing/frame extraction; OpenCV for image/frame operations; video-capable vision-language models; speech recognition systems listed above; managed video intelligence services.
+
+**Tradeoffs:** Video creates large volumes of data and privacy concerns. Frame sampling can miss brief events; transcription and visual analysis can be wrong. Keep timecodes and frame evidence, and clearly distinguish observation from inference.
 
 ## 2. Rules, regular expressions, and templates
 
@@ -93,6 +113,26 @@ This guide surveys methods that can help convert document text into reliable, st
 **Example technologies:** PostgreSQL plus Neo4j; PostgreSQL plus Amazon Neptune; relational storage plus an RDF store. Data movement can use an outbox pattern, change-data capture, or scheduled projection jobs.
 
 **Tradeoffs:** Combines strengths but adds synchronization and consistency work. Define one authoritative source and make graph projections rebuildable.
+
+## 9A. First-time setup and source connectors
+
+**Method:** Provide a guided onboarding flow to configure an organization/workspace, roles, source connections, access scope, supported modalities, schemas, and an initial backfill. Keep source adapters separate from extraction processors so new connectors can be enabled without reinstalling the product.
+
+**Useful when:** The product must be adoptable by multiple organizations with different folders, repositories, and business systems.
+
+**Example technologies:** OAuth 2.0 / OpenID Connect for delegated authentication where supported; REST/webhook adapters; scheduled workers; SFTP or object-storage connectors; database change-data capture (CDC); job queues such as Celery/RQ or managed cloud queues.
+
+**Tradeoffs:** Connector credentials, permissions, retries, rate limits, source schemas, and sync failures need ongoing management. Onboarding should preview accessible data before importing and allow resumable backfill.
+
+## 9B. Dynamic ingestion of new and changed records
+
+**Method:** After initial backfill, detect updates through source events/webhooks, CDC, watched folders, scheduled polling, or user uploads. Deduplicate by source ID/content hash, create a versioned ingestion event, queue work, and process idempotently through modality-specific adapters.
+
+**Useful when:** New files should become searchable without the user repeating a manual import or reinstalling the application.
+
+**Example technologies:** Webhooks and REST APIs; file watchers; Debezium or native CDC; task queues such as Celery/RQ; cloud event/queue services; content hashes and idempotency keys.
+
+**Tradeoffs:** “Dynamic” may mean seconds or scheduled intervals depending on connector support and budget. Deletions, permission changes, failed jobs, duplicates, and amended versions need explicit handling. Show last sync, item status, errors, retry controls, and audit events.
 
 ## 10. RDF, ontologies, and semantic vocabularies
 
@@ -186,16 +226,18 @@ This guide surveys methods that can help convert document text into reliable, st
 
 For a first prototype, combine methods in stages rather than selecting one technology for everything:
 
-1. Accept OCR-extracted text; add an OCR/document AI service only if needed.
-2. Use rules for predictable fields and schema-guided LLM extraction for varied language.
-3. Preserve source spans and raw values for every candidate fact and relationship.
-4. Resolve entities with exact IDs and aliases first; use fuzzy or embedding search only to suggest candidates.
-5. Validate output with JSON Schema/Pydantic and domain rules; if using RDF, validate with SHACL.
-6. Store operational records and evidence in PostgreSQL.
-7. Implement document-scoped incremental reconciliation with stable IDs, versioning, transactions, and audit history.
-8. Build a React review interface for evidence, ambiguity, and corrections.
-9. Add a property graph or RDF store when graph traversals, interoperability, or semantic reasoning are demonstrated requirements.
-10. Evaluate field extraction, relation quality, entity matching, evidence support, and update correctness on representative labeled documents.
+1. Provide guided initial setup: connect approved sources, verify access, configure schemas/modalities, and run an initial backfill.
+2. Receive documents, images, audio, and video through supported connectors or upload.
+3. Apply modality-specific processing: text/layout parsing and OCR; ASR for audio; video frame sampling plus audio transcription.
+4. Use rules for predictable fields and schema-guided LLM/NLP extraction for varied content.
+5. Preserve source spans, image regions, timestamps/timecodes, and raw values for candidate facts and relationships.
+6. Resolve entities with exact IDs and aliases first; use fuzzy or embedding search only to suggest candidates.
+7. Validate output with JSON Schema/Pydantic and domain rules; if using RDF, validate with SHACL.
+8. Store operational records, media references, and evidence in PostgreSQL.
+9. Implement dynamic ingestion and incremental reconciliation with stable IDs, versioning, idempotence, transactions, retries, and audit history.
+10. Build a React review interface for evidence, ambiguity, corrections, and ingestion status.
+11. Add a property graph or RDF store when graph traversals, interoperability, or semantic reasoning are demonstrated requirements.
+12. Evaluate extraction, search, matching, evidence, onboarding effort, ingestion freshness, and update correctness on representative labeled data for each modality.
 
 ## 19. Selection guide
 

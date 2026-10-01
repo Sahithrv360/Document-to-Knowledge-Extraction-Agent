@@ -170,11 +170,22 @@ These fields are suggestions, not requirements in the problem statement. Keeping
 
 These are important design decisions for the team; they should not be mistaken for requirements already present in the slide.
 
+### Expanded product direction from project discussion
+
+The project owner has since broadened the desired product beyond the slide's text-first starting point. The product direction now includes:
+
+- ingesting and extracting information from documents, images, audio, and video;
+- supporting organizations that manage client and contract records across digital folders, business systems, scans, and paper archives;
+- offering a straightforward first-time setup to connect approved data sources;
+- dynamically discovering or receiving new and changed data after setup, with visible sync and processing status.
+
+These are later product requirements to clarify with the startup, not claims about what the original slide explicitly required. Confirm initial modalities, connector types, freshness targets, security rules, and extraction fields before implementation.
+
 ---
 
 ## 10. A practical definition of success
 
-A working project should demonstrate that it can take sample extracted document text and produce structured entities, facts, and relationships; map supported items to the agreed business model; preserve evidence; flag ambiguity; and let a user inspect or query the results.
+A working project should demonstrate that it can ingest agreed sample sources and modalities, produce structured entities, facts, and relationships; map supported items to the agreed business model; preserve modality-specific evidence; flag ambiguity; and let a user inspect or query the results. If dynamic ingestion is in scope, demonstrate a new or changed source item being detected, processed, and reflected without a full rebuild.
 
 Useful evaluation questions include:
 
@@ -191,7 +202,7 @@ The team should choose measurable thresholds and a representative test set befor
 
 ## 11. Short summary
 
-This project is about moving from **document text** to **reliable, connected business information**. OCR makes content readable, while the proposed AI agent interprets that content into entities, facts, and relationships, aligns them with an existing business model when justified, and makes the results available for review or queries. The key quality requirement is trustworthiness: retain the difference between what the document says and what the system merely suspects.
+The original slide describes moving from **document text** to **reliable, connected business information**. The expanded product direction is multimodal: documents, images, audio, and video can be processed into entities, facts, and relationships, aligned with an existing business model when justified, and made available for review or queries. A product also needs easy source setup and dynamic intake of new or changed data. The key quality requirement remains trustworthiness: preserve source evidence and the difference between what a source states and what the system merely suspects.
 
 
 ---
@@ -434,5 +445,4 @@ A credible demo should show that the system knows when it does **not** know: it 
 
 The underlying problem is shared across several roles, but they experience it differently. Operations teams feel the manual handling burden; analysts feel the cost of turning text into usable datasets; domain owners feel the risk of incorrect facts; and governance/IT teams need the process to be controlled and auditable. The data team is the stated builder, while the first user and first document type still need to be established through discovery.
 
-The most defensible approach is to begin with one real workflow, learn its current process and error costs, define the target business vocabulary with its owners, and prototype a text-to-structured-data pipeline that keeps evidence and uncertainty visible. Technology should support that workflow: OCR where needed, schema-guided extraction, conservative entity matching, a conventional database, and a human review path.
-
+The most defensible approach is to begin with one real workflow, learn its current process and error costs, define the target business vocabulary with its owners, and prototype a source-connected, multimodal extraction pipeline that keeps evidence and uncertainty visible. Make first-time setup guided and repeatable, then add dynamic ingestion through the connectors and freshness level the startup needs. Technology should support that workflow: modality-specific parsing/transcription, schema-guided extraction, conservative entity matching, a conventional database, incremental updates, and a human review path. Expand to additional modalities and connectors based on validated priorities.

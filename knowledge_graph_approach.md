@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This document consolidates the project approach discussed so far. The problem is to turn already-extracted business document text into structured entities, facts, and relationships; connect them to an existing business model where reliable; and make evidence and uncertainty inspectable.
+This document describes a multimodal records system for turning documents, images, audio, and video into structured entities, facts, and relationships; connecting them to an existing business model where reliable; and making evidence and uncertainty inspectable. It should be easy to set up for a new organization and ingest new or changed source data dynamically after setup.
 
 The proposed implementation direction is an **incremental graph updater inspired by React DOM rendering**. React DOM is a user-interface renderer, not a graph database or document extraction library. The useful analogy is its update pattern: compare desired output with current state, calculate a small change set, and apply only the changes required. This project would implement that pattern for document-derived knowledge.
 
 ## Problem to solve
 
-Business documents contain information in prose, tables, and forms. OCR can produce readable text, but downstream analytics need consistent fields and explicit links. The system must:
+Business records contain prose, tables, forms, images, recordings, video, and paper-origin scans. OCR or transcription can make some content searchable, but downstream workflows need consistent fields and explicit links. The system must:
 
 - identify business entities, facts, and relationships;
 - map mentions to canonical records in the existing business model when there is sufficient evidence;
@@ -16,31 +16,64 @@ Business documents contain information in prose, tables, and forms. OCR can prod
 - distinguish document-stated facts from normalization or interpretation;
 - represent ambiguous, conflicting, or unresolved results without silently guessing;
 - update stored knowledge when a document changes without rebuilding unrelated data.
+- provide guided initial setup for the organization's approved sources and data model.
+- discover or receive new/changed records after setup and expose sync status and errors.
+- preserve modality-appropriate evidence: text spans/pages, image regions, audio timestamps, video timecodes/frame references, or physical archive identifiers.
 
 The initial user and first document type remain to be validated. A likely first user is a business data analyst or document reviewer.
+
+## Multimodal input and evidence
+
+Treat every input as a source asset with a stable identity, version, metadata, permissions, and processing status. Modality-specific processing can converge on a common extraction format:
+
+- **Documents and PDFs:** Parse native text and layout; use OCR for scanned pages; retain page/section references, table structure, and bounding boxes where available.
+- **Standalone images:** Use OCR and visual analysis to detect text, labels, objects, or context relevant to configured fields; retain image regions or bounding boxes.
+- **Audio:** Transcribe speech and preserve timestamps; speaker diarization may help distinguish speakers, but a speaker label does not establish a verified person's identity.
+- **Video:** Extract metadata, sample relevant key frames, process audio/transcripts, and preserve timecodes. Process frames at a rate appropriate to the use case rather than assuming every frame needs analysis.
+- **Paper records:** Scan or photograph through an approved capture workflow and retain physical archive references such as box, folder, shelf, or file number.
+
+Normalize outputs into a shared envelope such as `source_id`, `source_version`, `modality`, `item_type`, `value`, `verbatim_evidence`, `location`, `processing_run`, and `review_status`. `location` may represent a page/section, image region, audio interval, video time range/frame, or physical archive reference. OCR, transcription, and visual interpretation can contain errors, so preserve the evidence and its quality/status.
+
+## First-time setup and dynamic ingestion
+
+Provide guided onboarding so a new organization can connect approved sources without a bespoke installation effort for every source:
+
+1. Create an organization workspace and configure administrators and user roles.
+2. Connect approved sources through configurable adapters such as upload, watched folder, shared drive, document system, database, or API, using least-privilege access.
+3. Select collections/folders, allowed modalities, document types, retention rules, and the initial business vocabulary/schema.
+4. Preview discovered records and access scope before importing.
+5. Run a resumable initial backfill with progress, duplicate checks, and visible failures.
+6. Enable ongoing ingestion through the source's supported mechanism: event/webhook, change-data capture, watched folder, scheduled polling, or manual upload as fallback.
+7. Show last sync, queued/processing/failed items, retry controls, and audit history.
+
+Keep source connectors, modality processors, and extraction schemas as separate components. Then new sources, formats, or document types can be added through configuration/adapters without reinstalling the whole product. Version schemas and define migration or reprocessing behavior. Agree on data freshness with the startup; dynamic can mean near-real-time events or scheduled sync depending on source capabilities and cost.
+
+New items should enter a queue, be checked for duplicate identity/content, and be processed idempotently. Start extraction and reconciliation only after source authorization and source version are established.
 
 ## React DOM analogy
 
 | React DOM concept | Knowledge processing equivalent |
 |---|---|
-| Component tree / desired UI | Canonicalized extraction for one document |
-| Previous rendered tree | Last accepted extraction snapshot for that document |
+| Component tree / desired UI | Canonicalized extraction for one source asset (document, image, audio, or video) |
+| Previous rendered tree | Last accepted extraction snapshot for that source asset/version |
 | Reconciliation / diff | Compare new and stored facts, entities, and evidence |
 | DOM mutations | Database or graph mutations for changed records only |
-| Stable keys | Stable identifiers for document, mention, fact, relationship, and evidence |
+| Stable keys | Stable identifiers for source asset, mention, fact, relationship, and evidence |
 
 The analogy is about **incremental reconciliation**. It does not imply that React DOM can update a knowledge graph directly, or that its UI diff algorithm should be reused as a graph algorithm.
 
 ## Proposed processing flow
 
-1. **Receive document text.** The project problem begins after OCR/text extraction. Add OCR as an upstream stage only if the prototype needs to start from scans or PDFs.
-2. **Extract candidates.** Find entities, facts, and relationships with source spans (document, page/section, character offsets or other stable location).
-3. **Normalize carefully.** Store normalized values alongside verbatim text; never discard the source wording.
-4. **Resolve entities conservatively.** Use exact IDs and approved aliases first. Similarity search can suggest candidate records, but should not silently establish identity.
-5. **Validate.** Check types, required fields, relationship direction/roles, and allowed vocabulary against the business model.
-6. **Reconcile.** Compare the new extraction snapshot with the stored snapshot for the same document and produce a change set.
-7. **Apply atomically.** Apply additions, revisions, and removals in a transaction. Record run/version metadata for audit and recovery.
-8. **Review and query.** Expose evidence, match status, ambiguity, and changes for users and downstream systems.
+1. **Connect sources.** Complete guided onboarding, permission checks, source selection, and initial backfill.
+2. **Receive new or changed assets.** Use the configured event, watch, polling, or upload mechanism; record source version and content hash.
+3. **Process by modality.** Parse document text/layout, OCR images/scans, transcribe audio, and analyze configured video frames/audio.
+4. **Extract candidates.** Find entities, facts, and relationships with modality-appropriate evidence locations.
+5. **Normalize carefully.** Store normalized values alongside verbatim text/transcript or visual evidence; never discard the source.
+6. **Resolve entities conservatively.** Use exact IDs and approved aliases first. Similarity search can suggest candidate records, but should not silently establish identity.
+7. **Validate.** Check types, required fields, relationship direction/roles, and allowed vocabulary against the business model.
+8. **Reconcile.** Compare the new extraction snapshot with the stored snapshot for the same source asset/version and produce a change set.
+9. **Apply atomically.** Apply additions, revisions, and removals in a transaction. Record run/version metadata for audit and recovery.
+10. **Review and query.** Expose evidence, match status, ambiguity, ingestion status, and changes for users and downstream systems.
 
 ## Incremental update design
 
@@ -48,7 +81,7 @@ The analogy is about **incremental reconciliation**. It does not imply that Reac
 
 Each extracted item should have an identity that survives reprocessing when its meaning and source are unchanged. Candidate identity ingredients include:
 
-- document ID and document version;
+- source asset ID and source version;
 - item kind (entity mention, fact, relationship, evidence);
 - canonical subject/object IDs where known;
 - predicate or field name;
@@ -59,7 +92,7 @@ Do not use a model-generated display label as the sole ID. Text edits, page shif
 
 ### Change set
 
-For each document, compare the new extraction with the last stored snapshot and classify items as:
+For each source asset, compare the new extraction with the last stored snapshot and classify items as:
 
 - **Add:** New supported fact, mention, relationship, or evidence.
 - **Update:** Existing logical item whose value, status, normalization, or evidence changed.
@@ -173,14 +206,17 @@ Include clear examples, ambiguous cases, conflicts, and document revisions. A si
 
 | Layer | Candidate | Role |
 |---|---|---|
-| API/service | Python with FastAPI | Receive text, coordinate extraction, validate, and return structured results. |
+| API/service | Python with FastAPI | Coordinate source ingestion, extraction, validation, and structured results. |
+| Onboarding/connectors | Configurable source adapters plus OAuth/API credentials where applicable | Connect approved sources once, then discover or receive new and changed items dynamically. |
+| Queue/orchestration | Start with a background task queue; consider Celery/RQ or managed queues | Decouple sync from long-running OCR, transcription, video processing, and retries. |
 | Data contract | Pydantic / JSON Schema | Validate item shape and required types. |
 | Extraction | Schema-constrained LLM plus deterministic rules | Interpret varied wording while retaining predictable checks. |
 | Entity candidates | Exact lookup first; fuzzy/embedding search as candidate generation | Suggest possible canonical records without automatic identity assumptions. |
 | Primary persistence | PostgreSQL | Documents, snapshots, facts, relationships, evidence, review and audit state. |
 | Optional graph projection | Neo4j/property graph or RDF triple store | Add if graph traversal or standards-based knowledge exchange is needed. |
-| OCR (if required) | Benchmark a document OCR/IDP service or local OCR on project samples | Upstream text extraction; the original problem begins after this step. |
-| Review interface | React application | Show source text beside extracted values and support accept/edit/unresolved decisions. |
+| Document/image processing | Native text/layout parsing, OCR, and visual analysis selected for sample quality | Process PDFs, scans, and standalone images; retain page and region references. |
+| Audio/video processing | Speech recognition/transcription with timestamps; video key-frame sampling plus audio processing | Support recordings and video with time-based evidence; select providers after checking quality and data policy. |
+| Review interface | React application | Show source passages, image regions, or media timecodes beside extracted values and support review decisions. |
 
 For invoices and receipts, Amazon Textract's `AnalyzeExpense` API is one domain-specific option; it returns summary fields and line-item groups. It is an example to benchmark, not a requirement: [AWS AnalyzeExpense API](https://docs.aws.amazon.com/textract/latest/APIReference/API_AnalyzeExpense.html).
 
@@ -214,14 +250,15 @@ The source-backed `Claim` and `Evidence` distinction supports multiple documents
 
 ## Recommended implementation sequence
 
-1. Select one document type and high-value workflow with intended users.
-2. Define the business vocabulary, minimum schema, stable identifiers, and review rules.
-3. Assemble a permitted sample set with clear, ambiguous, and conflicting cases; label expected output.
-4. Build extraction from already-extracted text with evidence spans and unresolved status.
-5. Store document-scoped snapshots and implement an idempotent add/update/remove/supersede change set.
-6. Add a review screen that makes each extracted result traceable to source evidence.
-7. Evaluate field, relationship, match, provenance, and incremental-update quality.
-8. Add OCR, advanced entity resolution, graph projection, or graph database only when sample results and user queries demonstrate the need.
+1. Select one user group, workflow, one or two modalities, and one high-value record type with the startup.
+2. Define guided onboarding, source permissions, initial backfill, sync mechanism, freshness target, and support expectations.
+3. Define the business vocabulary, minimum schema, stable identifiers, modality-specific evidence locations, and review rules.
+4. Assemble permitted sample assets across the chosen modalities, including clear, ambiguous, and conflicting cases; label expected output.
+5. Build modality-specific parsing/transcription followed by common extraction, validation, and evidence capture.
+6. Store source-versioned snapshots and implement an idempotent add/update/remove/supersede change set.
+7. Add a review/search screen with source evidence and ingestion/sync status.
+8. Evaluate extraction, search, matching, provenance, dynamic ingestion, and incremental-update quality separately by modality.
+9. Expand modalities, connectors, entity resolution, graph projection, or graph database as validated needs require.
 
 ## References
 
